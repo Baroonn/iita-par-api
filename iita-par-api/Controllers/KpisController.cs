@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PAR.Infrastructure.Data;
 using PAR.Infrastructure.Models;
+using PAR.Shared.Constants;
 using PAR.Shared.DTOs;
 using System.Security.Claims;
 
@@ -26,7 +27,7 @@ namespace iita_par_api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetKpis(int year, long objectiveId)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
@@ -45,7 +46,7 @@ namespace iita_par_api.Controllers
         [HttpGet("{kpiId:long}")]
         public async Task<IActionResult> GetKpi(int year, long objectiveId, long kpiId)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
@@ -68,7 +69,7 @@ namespace iita_par_api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateKpi(int year, long objectiveId, KpiCreateDTO kpi)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
@@ -94,7 +95,7 @@ namespace iita_par_api.Controllers
         [HttpPut("{kpiId:long}")]
         public async Task<IActionResult> PutKpi(int year, long objectiveId, long kpiId, KpiUpdateDTO kpiUpdate)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
@@ -122,7 +123,7 @@ namespace iita_par_api.Controllers
         [HttpDelete("{kpiId:long}")]
         public async Task<IActionResult> DeleteKpi(int year, long objectiveId, long kpiId)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }

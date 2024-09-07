@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PAR.Infrastructure.Data;
 using PAR.Infrastructure.Models;
+using PAR.Shared.Constants;
 using PAR.Shared.DTOs;
 using System.Security.Claims;
 
@@ -26,12 +27,12 @@ namespace iita_par_api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetObjectives(int year)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objectives = await _context.Irsworkplans.Where(x => x.UserId == userId && x.Year == year).ToListAsync();
+            var objectives = await _context.Irsworkplans.Include(x => x.User).Where(x => x.UserId == userId && x.Year == year).ToListAsync();
             var toBeReturned = _mapper.Map<List<ObjectiveReadDTO>>(objectives);
             return Ok(toBeReturned);
         }
@@ -39,12 +40,12 @@ namespace iita_par_api.Controllers
         [HttpGet("{objectiveId:long}")]
         public async Task<IActionResult> GetObjective(int year, long objectiveId)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.Include(x => x.User).FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();
@@ -56,7 +57,7 @@ namespace iita_par_api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateObjective(int year, ObjectiveCreateDTO objective)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
@@ -72,13 +73,13 @@ namespace iita_par_api.Controllers
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetObjective", new { id = newObjective.Id }, _mapper.Map<ObjectiveReadDTO>(newObjective));
+            return CreatedAtAction("GetObjective", new { year = year, objectiveId = newObjective.Id }, _mapper.Map<ObjectiveReadDTO>(newObjective));
         }
 
         [HttpPut("{objectiveId:long}")]
         public async Task<IActionResult> PutObjective(int year, long objectiveId, ObjectiveUpdateDTO newObjective)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
@@ -101,7 +102,7 @@ namespace iita_par_api.Controllers
         [HttpDelete("{objectiveId:long}")]
         public async Task<IActionResult> DeleteObjective(int year, long objectiveId)
         {
-            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }

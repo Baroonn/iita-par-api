@@ -8,7 +8,8 @@ namespace iita_par_api.Profiles
     {
         public ObjectiveProfile() 
         { 
-            CreateMap<Irsworkplan, ObjectiveReadDTO>();
+            CreateMap<Irsworkplan, ObjectiveReadDTO>()
+                .ForMember(dist => dist.Username, opt => opt.MapFrom(src => src.User.FirstName));
             CreateMap<ObjectiveCreateDTO, Irsworkplan>();
             CreateMap<ObjectiveUpdateDTO, Irsworkplan>();
         }

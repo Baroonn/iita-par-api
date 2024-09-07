@@ -14,6 +14,6 @@ namespace PAR.Shared.DTOs
         public string? Objective { get; set; }
         public int? Status { get; set; }
         public int? Year { get; set; }
-        public long Username { get; set; }
+        public string? Username { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PAR.Infrastructure.Data;
 using PAR.Infrastructure.Models;
+using PAR.Shared.Constants;
 using PAR.Shared.DTOs;
 using PAR.Shared.Enums;
 using System.IdentityModel.Tokens.Jwt;
@@ -91,9 +92,18 @@ namespace iita_par_api.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(CustomClaimType.UserIdIdentifier, user.Id.ToString())
             };
 
+            var identity = new ClaimsIdentity(claims);
+
+            var claimToRemove = identity.FindFirst(ClaimTypes.NameIdentifier);
+            if (claimToRemove != null)
+            {
+                identity.RemoveClaim(claimToRemove);
+            }
+
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_keyyour_secret_keyyour_secret_keyyour_secret_keyyour_secret_keyyour_secret_keyyour_secret_key"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
