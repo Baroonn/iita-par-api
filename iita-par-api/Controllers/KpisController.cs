@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace iita_par_api.Controllers
 {
-    [Route("api/workplans/{year:int:length(4)}/objectives/{objectiveId:long}/kpis")]
+    [Route("api/workplans/objectives/{objectiveId:long}/kpis")]
     [ApiController]
     [Authorize]
     public class KpisController : ControllerBase
@@ -25,14 +25,14 @@ namespace iita_par_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetKpis(int year, long objectiveId)
+        public async Task<IActionResult> GetKpis(long objectiveId)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();
@@ -44,14 +44,14 @@ namespace iita_par_api.Controllers
         }
 
         [HttpGet("{kpiId:long}")]
-        public async Task<IActionResult> GetKpi(int year, long objectiveId, long kpiId)
+        public async Task<IActionResult> GetKpi(long objectiveId, long kpiId)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();
@@ -67,14 +67,14 @@ namespace iita_par_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateKpi(int year, long objectiveId, KpiCreateDTO kpi)
+        public async Task<IActionResult> CreateKpi(long objectiveId, KpiCreateDTO kpi)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();
@@ -89,18 +89,18 @@ namespace iita_par_api.Controllers
             _context.Irskpis.Add(newKpi);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetKpi", new { id = newKpi.Id }, _mapper.Map<KpiReadDTO>(newKpi));
+            return CreatedAtAction("GetKpi", new { objectiveId = newKpi.WorkplanId, kpiId = newKpi.Id }, _mapper.Map<KpiReadDTO>(newKpi));
         }
 
         [HttpPut("{kpiId:long}")]
-        public async Task<IActionResult> PutKpi(int year, long objectiveId, long kpiId, KpiUpdateDTO kpiUpdate)
+        public async Task<IActionResult> PutKpi(long objectiveId, long kpiId, KpiUpdateDTO kpiUpdate)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();
@@ -121,14 +121,14 @@ namespace iita_par_api.Controllers
         }
 
         [HttpDelete("{kpiId:long}")]
-        public async Task<IActionResult> DeleteKpi(int year, long objectiveId, long kpiId)
+        public async Task<IActionResult> DeleteKpi(long objectiveId, long kpiId)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();

@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace iita_par_api.Controllers
 {
-    [Route("api/workplans/{year:int:length(4)}/objectives")]
+    [Route("api/workplans/objectives")]
     [ApiController]
     [Authorize]
     public class ObjectivesController : ControllerBase
@@ -25,7 +25,7 @@ namespace iita_par_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetObjectives(int year)
+        public async Task<IActionResult> GetObjectives([FromQuery] int year)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
@@ -38,14 +38,14 @@ namespace iita_par_api.Controllers
         }
 
         [HttpGet("{objectiveId:long}")]
-        public async Task<IActionResult> GetObjective(int year, long objectiveId)
+        public async Task<IActionResult> GetObjective(long objectiveId)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var objective = await _context.Irsworkplans.Include(x => x.User).FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var objective = await _context.Irsworkplans.Include(x => x.User).FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
             if (objective == null)
             {
                 return NotFound();
@@ -55,7 +55,7 @@ namespace iita_par_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateObjective(int year, ObjectiveCreateDTO objective)
+        public async Task<IActionResult> CreateObjective(ObjectiveCreateDTO objective)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
@@ -66,25 +66,24 @@ namespace iita_par_api.Controllers
             newObjective.DateCreated = DateTime.Now;
             newObjective.DateUpdated = newObjective.DateCreated;
             newObjective.Version = 1;
-            newObjective.Year = year;
             newObjective.UserId = userId;
 
             _context.Irsworkplans.Add(newObjective);
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetObjective", new { year = year, objectiveId = newObjective.Id }, _mapper.Map<ObjectiveReadDTO>(newObjective));
+            return CreatedAtAction("GetObjective", new { objectiveId = newObjective.Id }, _mapper.Map<ObjectiveReadDTO>(newObjective));
         }
 
         [HttpPut("{objectiveId:long}")]
-        public async Task<IActionResult> PutObjective(int year, long objectiveId, ObjectiveUpdateDTO newObjective)
+        public async Task<IActionResult> PutObjective(long objectiveId, ObjectiveUpdateDTO newObjective)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var oldObjective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var oldObjective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
 
             if(oldObjective == null)
             {
@@ -100,14 +99,14 @@ namespace iita_par_api.Controllers
         }
 
         [HttpDelete("{objectiveId:long}")]
-        public async Task<IActionResult> DeleteObjective(int year, long objectiveId)
+        public async Task<IActionResult> DeleteObjective(long objectiveId)
         {
             if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
             {
                 return BadRequest();
             }
 
-            var oldObjective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Year == year && x.Id == objectiveId);
+            var oldObjective = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == objectiveId);
 
             if (oldObjective == null)
             {

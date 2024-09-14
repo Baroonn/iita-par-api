@@ -10,6 +10,5 @@ namespace PAR.Shared.DTOs
     public class ObjectiveUpdateDTO
     {
         public string? Objective { get; set; }
-        public int? Status { get; set; }
     }
 }

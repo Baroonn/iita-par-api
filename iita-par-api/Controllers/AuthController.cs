@@ -111,7 +111,7 @@ namespace iita_par_api.Controllers
                 issuer: "your_issuer",
                 audience: "your_audience",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
