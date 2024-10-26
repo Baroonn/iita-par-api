@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>iita_par_api</RootNamespace>
+    <UserSecretsId>2a50a8a4-85ce-4c98-8c57-f3f4c35bf13b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -27,7 +27,7 @@ namespace iita_par_api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetObjectives([FromQuery] int year)
         {
-            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId))
+            if (!long.TryParse(User.FindFirst(CustomClaimType.UserIdIdentifier)?.Value, out long userId) || year <= 0)
             {
                 return BadRequest();
             }
