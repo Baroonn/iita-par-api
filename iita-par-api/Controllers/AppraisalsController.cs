@@ -9,6 +9,7 @@ using PAR.Shared.Constants;
 using PAR.Shared.DTOs;
 using PAR.Shared.Enums;
 using System.Linq;
+using System.Security.Claims;
 
 namespace iita_par_api.Controllers
 {
@@ -25,7 +26,7 @@ namespace iita_par_api.Controllers
                 return BadRequest();
             }
 
-            var appraisals = await _context.Appraisals.Where(x => (x.AppraiserId == userId || x.AppraiseeId == userId) && x.YearOfAppraisal == year).ToListAsync();
+            var appraisals = await _context.Appraisals.Include(x => x.Country).Where(x => (x.AppraiserId == userId || x.AppraiseeId == userId) && x.YearOfAppraisal == year).ToListAsync();
             
             if (!appraisals.Any(x => x.AppraiserId == userId))
             {
@@ -71,7 +72,7 @@ namespace iita_par_api.Controllers
                 return BadRequest();
             }
 
-            var appraisal = await _context.Appraisals.Include(x => x.Appraisalscores).FirstOrDefaultAsync(x => x.Id == id && (x.AppraiseeId == userId || x.AppraiserId == userId));
+            var appraisal = await _context.Appraisals.Include(x => x.Appraisalscores).Include(x => x.Country).FirstOrDefaultAsync(x => x.Id == id && (x.AppraiseeId == userId || x.AppraiserId == userId));
             if (appraisal == null)
             {
                 return NotFound();
@@ -93,9 +94,12 @@ namespace iita_par_api.Controllers
                 return NotFound();
             }
 
+            //make sure appraisalscores is provided
             appraisal.Appraisalscores = [];
 
             _mapper.Map(appraisalEdit, appraisal);
+            appraisal.LastUpdated = DateTime.Now;
+            appraisal.LastUpdatedBy = User.FindFirst(ClaimTypes.Name)?.Value ?? "supervisor";
             await _context.SaveChangesAsync();
             return Ok(_mapper.Map<AppraisalReadDTO>(appraisal));
         }

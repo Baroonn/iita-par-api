@@ -17,5 +17,6 @@ namespace PAR.Shared.DTOs
         public string TrainingNeeds { get; set; } = string.Empty;
         public bool Appeal { get; set; }
         public string? StaffComments { get; set; }
+        public long CountryId { get; set;}
     }
 }

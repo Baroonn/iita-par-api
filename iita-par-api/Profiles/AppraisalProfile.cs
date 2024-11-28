@@ -17,6 +17,7 @@ namespace iita_par_api.Profiles
             CreateMap<Appraisal, AppraisalReadDTO>()
                 .ForMember(dest => dest.Appeal, opt => opt.MapFrom(src => src.Appeal == "true"))
                 .ForMember(dest => dest.AppraiseeServed, opt => opt.MapFrom(src => src.Appraisalcommittees.Count > 0))
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country.Name))
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Appraisalscores.ToDictionary(
                     item => Enum.Parse<AppraisalScoreKey>(item.ScoreKey),
                     item => item.Score

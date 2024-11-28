@@ -9,13 +9,16 @@ namespace PAR.Shared.DTOs
 {
     public class AppraisalReadDTO
     {
+        public long Id { get; set; }
         public string Unit { get; set; } = string.Empty;
         public string Project { get; set; } = string.Empty;
         public string AppraiseeName { get; set; } = string.Empty;
+        public string AppraiserName { get; set; } = string.Empty;
         public string JobTitle { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public string Supervisor { get; set; } = string.Empty;
         public DateTime? LastUpdated { get; set; }
+        public string? LastUpdatedBy { get; set; }
         public string Status { get; set; } = string.Empty;
         public string RatingSummary { get; set; } = string.Empty;
         public double FinalScore { get; set; }
