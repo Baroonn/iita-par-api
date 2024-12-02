@@ -8,6 +8,8 @@ namespace PAR.Shared.Enums
 {
     public enum WorkplanStatus
     {
-        Draft
+        Draft,
+        Submitted,
+        Approved
     }
 }

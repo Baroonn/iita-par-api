@@ -77,7 +77,20 @@ namespace iita_par_api.Controllers
             {
                 return NotFound();
             }
-            return Ok(_mapper.Map<AppraisalReadDTO>(appraisal));
+
+            var appraisalReturned = _mapper.Map<AppraisalReadDTO>(appraisal);
+            var workplan = await _context.Irsworkplans.FirstOrDefaultAsync(x => x.Year == appraisal.YearOfAppraisal && appraisal.AppraiseeId == x.UserId);
+            appraisalReturned.WorkplanUploaded = workplan != null;
+            appraisalReturned.WorkplanApproved = workplan != null && workplan.Status == (int)WorkplanStatus.Approved;
+            appraisalReturned.WorkplanSubmitted = appraisalReturned.WorkplanApproved || workplan?.Status == (int)WorkplanStatus.Submitted;
+
+            appraisalReturned.FinalScore =
+                (appraisalReturned.Score[AppraisalScoreKey.WorkplanAchievement] * 20)
+                + (appraisalReturned.Score[AppraisalScoreKey.InterRelations] * 10)
+                + (appraisalReturned.Score[AppraisalScoreKey.Initiative] * 10)
+                + (appraisalReturned.Score[AppraisalScoreKey.Communication] * 10)
+                + (appraisalReturned.Score[AppraisalScoreKey.Compliance] * 10);
+            return Ok(appraisalReturned);
         }
 
         [HttpPut("{id:long}")]
